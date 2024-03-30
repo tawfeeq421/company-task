@@ -1,0 +1,37 @@
+
+
+div#advantage-container{
+    
+    height: 80vh;
+}
+
+div#advantage-container section.adv-heading{
+    
+    height: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+section.adv-heading h2{
+    font-family: sans-serif;
+    font-size: 35px;
+    color:#414141;
+
+}
+
+div#advantage-container section.adv-list{
+    
+    height: 75%;
+    display: flex;
+    justify-content: center;
+    align-items:first baseline;
+    padding:3%
+}
+
+section.adv-list ul li{
+    font-size: 18px;
+    font-family: sans-serif;
+    line-height: 1.6;
+    color:#818181
+}

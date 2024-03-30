@@ -1,0 +1,102 @@
+
+
+div#proj-Higlight{
+    
+    height: 80vh;
+    display: flex;
+
+}
+
+div#proj-Higlight section#proj-text{
+    
+    width:30%;
+    display: flex;
+    justify-content: center;
+    
+}
+
+section#proj-text h2.PH{
+    color:#f15b26;
+    font-family: sans-serif;
+    font-size: 35px;
+    line-height: 0;
+    margin-top: 15%;
+
+}
+
+section#proj-text h2.PH-2{
+    color: #323232;
+    font-family: sans-serif;
+    font-size: 35px;
+    line-height: 0.5;
+
+}
+
+div#proj-Higlight section#Highlight-icon{
+    
+    width:60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+
+section#Highlight-icon div.HIG-Icon{
+    
+    height: 23%;
+    display: flex;
+    justify-content: space-between;
+}
+
+div.HIG-Icon div.png{
+    
+    width:20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+div.png span{
+    font-family: sans-serif;
+    text-transform: uppercase;
+    line-height: 3;
+    font-size: 15px;
+}
+
+div.png img{
+    width:35%;
+    height: 45%;
+}
+
+section#Highlight-icon div.HIG-Icon-last{
+    
+    height: 23%;
+    display: flex;
+    flex-direction: row;
+    
+    
+}
+
+section#Highlight-icon div.HIG-Icon-last div.PNG{
+    
+    width:20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+div.PNG span{
+    font-family: sans-serif;
+    text-transform: uppercase;
+    line-height: 3;
+    font-size: 15px;
+
+}
+
+div.PNG img{
+    width:35%;
+    height: 45%;
+}
+

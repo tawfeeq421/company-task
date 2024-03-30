@@ -1,0 +1,19 @@
+
+
+div#layout-container{
+    
+    height: 75vh;
+    background-color: #d2e28b;
+    padding:5%
+}
+
+div#layout-container div#plan-layout{
+    
+    height: 100%;
+    
+}
+
+div#plan-layout img.palnimg{
+    width: 95%;
+    height: 100%;
+}

@@ -1,0 +1,49 @@
+div#Area-container{
+    
+    height: 90vh;
+    position: relative;
+    background-color: #382456;
+    padding:5%
+}
+
+
+div#Area-container h3#area-title{
+    font-size: 35px;
+    font-family: sans-serif;
+    margin-left: 3%;
+    color:white;
+    font-weight: 500;
+}
+
+div#Area-container section.Area-box{
+    
+    height: 40%;
+    margin: 3%;
+    display: flex;
+    justify-content: space-between;
+}
+
+section.Area-box div.bacgroundimg-text{
+    
+    width:23%;
+    height: 100%;
+    
+    
+}
+
+div.bacgroundimg-text img.bgimg{
+    width:100%;
+    height: 100%;
+    transform: scale(1);
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+    cursor: pointer;
+}
+
+div.bacgroundimg-text img.bgimg:hover{
+    transform:scale(1.05);
+    
+}
+
+
+

@@ -1,0 +1,73 @@
+
+
+div#peddafooter-container{
+    
+    height: 95vh;
+    background-color: rgb(69, 129, 33);
+
+}
+
+div#peddafooter-container section#footer-logo{
+    
+    height: 35%;
+    display: flex;
+    padding-top:3%;
+    justify-content: center;
+    align-items: center;
+}
+
+section#footer-logo div#img-logo{
+    
+    width:15%;
+    height: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffff;
+    border-radius: 20px;
+}
+
+div#img-logo img{
+    width:85%;
+    height: 70%;
+}
+
+
+div#peddafooter-container section#pedda-footer{
+    
+    height: 55%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+section#pedda-footer span{
+
+    height: 25%;
+    width:30%;
+    font-size: 16px;
+    font-family: sans-serif;
+    text-align: center;
+    line-height: 1.8;
+    color:#ffff;
+    
+}
+
+section#pedda-footer div.social-icon{
+    
+    height: 35%;
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding:1%
+}
+
+div.social-icon svg{
+    margin-left: 9%;
+    
+}
+
+
+

@@ -1,0 +1,261 @@
+div div#Discp-container{
+    
+    height: 95vh;
+    background-image: url("https://primelandindia.com/img/why-choose-bg.jpg");
+    position: relative;
+    display: block;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    z-index: 1;
+    padding:5%
+}
+
+
+div#Discp-container section#discp{
+    
+    padding:2%;
+    
+    height: 90%;
+    display: flex;
+}
+
+section#discp div#img-and-text1{
+    
+    width: 40%;
+    height: 80%;
+    background-color: #382456;
+}
+
+div#img-and-text1 section.only-logo{
+    
+    width:15%;
+    height: 15%;
+    padding-right:10%;
+    margin-top: 5%;
+    margin-left: 5%;
+    
+    
+}
+
+section.only-logo img{
+    height: 90%;
+    width:100%
+}
+
+div#img-and-text1 h4{
+    
+    width:60%;
+    font-size: 22px;
+    font-family: sans-serif;
+    font-weight: 300;
+    text-transform: uppercase;
+    line-height: 1.5;
+    color: white;
+    margin-left: 5%;
+}
+
+div#img-and-text1 p{
+    
+    width: 80%;
+    font-family: sans-serif;
+    line-height: 1.5;
+    margin-left:5% ;
+    color: #ffffff;
+}
+
+
+
+section#discp div#img-and-text2{
+    
+    width: 40%;
+    height: 100%;
+}
+
+div#img-and-text2 section.Passion{
+
+    background-color:rgb(243, 147, 20) ;
+    height: 53%;
+}
+
+section.Passion h3{
+    
+    font-size: 30px;
+    font-family: sans-serif;
+    margin-top: 0%;
+    padding-top: 4%;
+    padding-left: 5%;
+    color:#382456;
+}
+
+section.Passion p.P{
+    
+    font-size: 20px;
+    font-weight: 600;
+    font-family: sans-serif;
+    padding-left: 5%;
+    color: white;
+
+}
+
+section.Passion p.pyara{
+    
+    width:90%;
+    font-size: 13px;
+    font-family: sans-serif;
+    padding-top:1%;
+    padding-left: 5%;
+    line-height: 2;
+    color:white;
+    
+}
+
+div#img-and-text2 section.Commitment{
+    
+    margin-top:0;
+    padding-top: 0;
+    height: 54%;
+    background-color: white;
+}
+
+section.Commitment h3{
+    
+    font-size: 30px;
+    font-family: sans-serif;
+    margin-top: 0%;
+    padding-top: 4%;
+    padding-left: 5%;
+    color:#382456;
+}
+
+section.Commitment p.P{
+    
+    font-size: 20px;
+    font-weight: 600;
+    font-family: sans-serif;
+    padding-left: 5%;
+    color: black;
+    margin:0;
+    padding-top: 0;
+
+}
+
+section.Commitment p.pyara{
+    
+    width:90%;
+    font-size: 13px;
+    font-family: sans-serif;
+    padding-top:1%;
+    padding-left: 5%;
+    line-height: 2;
+    color:#382456;
+    
+}
+
+section#discp div#img-and-text3{
+    
+    width: 40%;
+    height: 100%;
+}
+
+div#img-and-text3 section.Creation{
+    
+    height: 53%;
+    background-color: white;
+}
+
+section.Creation h3{
+    
+    font-size: 30px;
+    font-family: sans-serif;
+    margin-top: 0%;
+    padding-top: 4%;
+    padding-left: 5%;
+    color:#382456;
+}
+
+section.Creation p.P{
+    
+    font-size: 20px;
+    font-weight: 600;
+    font-family: sans-serif;
+    padding-left: 5%;
+    color: black;
+
+}
+
+section.Creation p.pyara{
+    
+    width:90%;
+    font-size: 13px;
+    font-family: sans-serif;
+    padding-top:1%;
+    padding-left: 5%;
+    line-height: 2;
+    color:#382456;
+    
+}
+
+div#img-and-text3 section.Sustainability{
+    
+    margin-top:0;
+    padding-top: 0;
+    height:54%;
+    background-color:rgb(243, 147, 20); ;
+}
+
+
+
+section.Sustainability h3{
+    
+    font-size: 30px;
+    font-family: sans-serif;
+    margin-top: 0%;
+    padding-top: 4%;
+    padding-left: 5%;
+    color:#382456;
+}
+
+section.Sustainability p.P{
+    
+    font-size: 20px;
+    font-weight: 600;
+    font-family: sans-serif;
+    padding-left: 5%;
+    color: white;
+    margin:0;
+    padding-top: 0;
+
+}
+
+section.Sustainability p.pyara{
+    
+    width:90%;
+    font-size: 13px;
+    font-family: sans-serif;
+    padding-top:0%;
+    padding-left: 5%;
+    line-height: 1.5;
+    color:white;
+    
+}
+
+
+button.discp-btn{
+    width:34%;
+    padding:1.5%;
+    font-size: 20px;
+    font-family: sans-serif;
+    position: relative;
+    top:-46%;
+    
+    background-color: rgb(243, 147, 20);
+    color:white;
+    border: 0;
+}
+
+
+
+
+

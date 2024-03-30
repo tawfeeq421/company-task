@@ -1,0 +1,43 @@
+div#doneproj-container{
+    
+    height: 12vh;
+    display: flex;
+    justify-content: space-between;
+    
+    
+}
+
+div#doneproj-container p#bottom-text{
+    
+    font-family: sans-serif;
+    font-weight: 550;
+    color:rgb(134, 134, 134);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+div#doneproj-container p#bottom-text2{
+    font-family: sans-serif;
+    display: flex;
+    color:gray;
+    justify-content: center;
+    align-items: center;
+}
+
+div#doneproj-container div#bottom-icon{
+    
+    width:30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div#bottom-icon img{
+    width:8%;
+    height: 25%;
+    margin-left: 3%;
+}
+
+
