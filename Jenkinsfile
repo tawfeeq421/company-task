@@ -53,9 +53,9 @@ pipeline{
         stage("Docker Build & Push"){
             steps{
                 script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
+                   withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker'){
                        sh "docker build -t company ."
-                       sh "docker tag tourist tawfeeq421/company:task "
+                       sh "docker tag company tawfeeq421/company:task "
                        sh "docker push tawfeeq421/company:task "
                     }
                 }
