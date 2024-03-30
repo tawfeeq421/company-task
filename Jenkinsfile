@@ -71,6 +71,17 @@ pipeline{
                 sh 'docker run -d --name amazon -p 3000:3000 tawfeeq421/company:task'
             }
         }
+        stage('Deploy to kubernets'){
+            steps{
+                script{
+                    withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                       sh 'kubectl apply -f deployment.yml'
+                       sh 'kubectl apply -f service.yml'
+                       sh 'kubectl apply -f ingress.yml'
+                  }
+                }
+            }
+        }
        
     }
 }
