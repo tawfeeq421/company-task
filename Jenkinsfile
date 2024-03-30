@@ -18,11 +18,16 @@ pipeline{
                 git branch: 'main', url: 'https://github.com/tawfeeq421/company-task.git'
             }
         }
+        stage('Install Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
         stage("Sonarqube Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Company-task \
-                    -Dsonar.projectKey=Company-tak '''
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Reddit \
+                    -Dsonar.projectKey=Reddit '''
                 }
             }
         }
@@ -33,18 +38,12 @@ pipeline{
                 }
             }
         }
-        stage('Install Dependencies') {
-            steps {
-                sh "npm install"
-            }
-        }
         stage('OWASP FS SCAN') {
             steps {
                 dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-        
         stage('TRIVY FS SCAN') {
             steps {
                 sh "trivy fs . > trivyfs.txt"
@@ -54,21 +53,21 @@ pipeline{
             steps{
                 script{
                    withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker'){
-                       sh "docker build -t company ."
-                       sh "docker tag company tawfeeq421/company:task "
+                       sh "docker build -t reddit ."
+                       sh "docker tag reddit tawfeeq421/company:task "
                        sh "docker push tawfeeq421/company:task "
                     }
                 }
             }
         }
-        stage("TRIVY IMAGE SCAN"){
+        stage("TRIVY"){
             steps{
-                sh "trivy image tawfeeq421/company:task > trivyimage.txt"
+                sh "trivy image tawfeeq421/company:task > trivy.txt"
             }
         }
         stage('Deploy to container'){
             steps{
-                sh 'docker run -d --name amazon -p 3000:3000 tawfeeq421/company:task'
+                sh 'docker run -d --name reddit -p 3000:3000 tawfeeq421/company:task'
             }
         }
         stage('Deploy to kubernets'){
@@ -82,6 +81,5 @@ pipeline{
                 }
             }
         }
-       
     }
 }
