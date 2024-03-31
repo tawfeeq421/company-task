@@ -42,9 +42,5 @@ jobs:
         env:
           DOCKER_CLI_ACI: 1
 
-      - name: Docker Scout Image Scan
-        run: |
-          docker-scout quickview tawfeeq421/sahil:task
-          docker-scout cves tawfeeq421/sahil:task
       - name: Run the container
         run: docker run -d --name sahil-taks -p 3000:3000 tawfeeq421/sahil:task
