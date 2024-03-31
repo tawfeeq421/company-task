@@ -39,8 +39,6 @@ jobs:
           docker tag sahil tawfeeq421/sahil:task
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           docker push tawfeeq421/sahil:task
-        env:
-          DOCKER_CLI_ACI: 1
-
+  
       - name: Run the container
         run: docker run -d --name sahil-taks -p 3000:3000 tawfeeq421/sahil:task
