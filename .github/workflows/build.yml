@@ -27,4 +27,27 @@ jobs:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: NPM Install
-        run: npm install # Add your specific npm install command give the correct snytax
+        run: npm install # Add your specific npm install command give the correct syntax
+
+      - name: Docker Login
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker Scout Scan
+        run: |
+          docker-scout quickview fs://.
+          docker-scout cves fs://.
+
+      - name: Docker build and push
+        run: |
+          # Run commands to build and push Docker images
+          docker build -t sahil .
+          docker tag sahil tawfeeq421/sahil:task
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker push tawfeeq421/sahil:task
+        env:
+          DOCKER_CLI_ACI: 1
+
+      - name: Docker Scout Image Scan
+        run: |
+          docker-scout quickview tawfeeq421/sahil:task
+          docker-scout cves tawfeeq421/sahil:task
