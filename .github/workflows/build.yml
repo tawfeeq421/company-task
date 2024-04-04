@@ -5,49 +5,22 @@ on:
     branches:
       - main
 
+
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted]
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
       # - uses: sonarsource/sonarqube-quality-gate-action@master
       #   timeout-minutes: 5
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: NPM Install
-        run: npm install # Add your specific npm install command give the correct syntax
-
-      - name: Docker Login
-        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Docker build and push
-        run: |
-          # Run commands to build and push Docker images
-          docker build -t sahil .
-          docker tag sahil tawfeeq421/sahil:task
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker push tawfeeq421/sahil:task
-
-      - name: Run the container
-        run: docker run -d --name sahil-task -p 3000:3000 tawfeeq421/sahil:task
-
-      - name: Update kubeconfig
-        run: aws eks --region ap-south-1 update-kubeconfig --name EKS_CLOUD
-
-      - name: Deploy to EKS
-        run: |
-          kubectl apply -f deployment.yml
-          kubectl apply -f service.yml
-          kubectl apply -f ingress.yml
