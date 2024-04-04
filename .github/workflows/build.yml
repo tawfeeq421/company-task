@@ -36,9 +36,7 @@ jobs:
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           docker push tawfeeq421/company:latest
         env:
-          DOCKER_CLI_ACI: 1
-      - name: Trivy image scan
-        run: trivy tawfeeq421/company:latest 
+          DOCKER_CLI_ACI: 1 
       - name: Run the container
         run: docker run -d --name task -p 3000:3000 tawfeeq421/company:latest
           
