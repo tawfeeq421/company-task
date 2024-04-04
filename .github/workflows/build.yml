@@ -32,7 +32,7 @@ jobs:
         run: |
           # Run commands to build and push Docker images
           docker build -t company .
-          docker tag myntra tawfeeq421/company:latest
+          docker tag company tawfeeq421/company:latest
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           docker push tawfeeq421/company:latest
         env:
