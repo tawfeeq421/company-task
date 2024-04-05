@@ -52,7 +52,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Docker pull image
-        run: docker pull tawfeeq421/task:latestt
+        run: docker pull tawfeeq421/task:latest
 
       - name: Image scan
         run: trivy image tawfeeq421/task:latest > trivyimagedeploy.txt  
