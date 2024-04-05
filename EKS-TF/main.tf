@@ -8,15 +8,35 @@ data "aws_subnet" "public" {
   vpc_id = data.aws_vpc.default.id
 }
 
+# Create IAM role for EKS cluster
+resource "aws_iam_role" "example" {
+  name = "eks-cluster-cloud"
+
+  assume_role_policy = jsonencode({
+    Statement = [{
+      Action   = "sts:AssumeRole"
+      Effect   = "Allow"
+      Principal = {
+        Service = "eks.amazonaws.com"
+      }
+    }]
+    Version = "2012-10-17"
+  })
+}
+
+# Attach AmazonEKSClusterPolicy to IAM role
+resource "aws_iam_role_policy_attachment" "example-AmazonEKSClusterPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.example.name
+}
+
 # Cluster provision
 resource "aws_eks_cluster" "example" {
   name     = "EKS_CLOUD"
   role_arn = aws_iam_role.example.arn
 
   vpc_config {
-    subnet_ids = data.aws_subnet.public.ids
-    # Optionally, you can specify specific availability zones if needed.
-    # availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+    subnet_ids = [data.aws_subnet.public.id]
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.
@@ -62,7 +82,7 @@ resource "aws_eks_node_group" "example" {
   cluster_name    = aws_eks_cluster.example.name
   node_group_name = "Node-cloud"
   node_role_arn   = aws_iam_role.example1.arn
-  subnet_ids      = data.aws_subnet.public.ids
+  subnet_ids      = [data.aws_subnet.public.id]
 
   scaling_config {
     desired_size = 1
