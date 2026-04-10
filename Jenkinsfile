@@ -1,37 +1,49 @@
 pipeline {
     agent any
     tools {
-        jdk 'jdk17'
-        nodejs 'node16'
+        jdk 'JDK17'
+        nodejs 'NODE16'
     }
-    
-    stages {
-        stage('Clean Workspace') {
-            steps {
+    environment {
+        DOCKER_IMAGE = "tawfeeq421/task"
+        DOCKER_TAG = '${BUILD_NUMBER}'
+    }
+    stages{
+        stage('Clean Workspace'){
+            steps{
                 cleanWs()
             }
         }
-        stage('Checkout from Git') {
-            steps {
-                git branch: 'main', url: 'https://github.com/tawfeeq421/company-task.git'
+        stage('Git Checkout'){
+            steps[
+                git branch: 'mian', url: 'https://github.com/tawfeeq421/company-task.git'
+            ]
+        }
+        stage('Install Dependency'){
+            steps{
+                sh 'npm install'
             }
         }
-        
-        stage('Docker Build & Push') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
-                        sh 'docker build -t reddit1 .'
-                        sh 'docker tag reddit1 tawfeeq421/company1:task'
-                        sh 'docker push tawfeeq421/company1:task'
-                    }
+        stage('Jest Test'){
+            steps{
+                sh 'npm test -- --watchAll=false --coverage'
+            }
+        }
+        stage('SonarQube Analysis'){
+            environment{
+                sccannerHome = tool 'sonar'
+            }
+            steps{
+                withSonarQubeEnv('sonarserver'){
+                    sh '${scannerHome}/bin/sonar-scanner'
                 }
             }
         }
-        
-        stage('Deploy to Container') {
-            steps {
-                sh 'docker run -d --name reddit -p 3000:3000 tawfeeq421/company1:task'
+        stage('Quality Gate'){
+            steps{
+                timeout(time: 1, unit: 'HOURS'){
+                    waitForQualityGate abordPipeline: true
+                }
             }
         }
     }
