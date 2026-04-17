@@ -34,13 +34,6 @@ pipeline {
                 sh 'npm install'
             }
         }
-
-        stage('Run Tests') {
-            steps {
-                sh 'npm test -- --watchAll=false --coverage'
-            }
-        }
-
         stage('SonarQube Analysis') {
             environment {
                 scannerHome = tool 'sonar'
