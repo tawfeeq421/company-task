@@ -73,4 +73,23 @@ pipeline{
             }
         }
     }
+    post{
+        always{
+            archiveArtifacts artifact: 'trivy-report.txt', fingerprint: true
+        }
+        success {
+            slackSend(
+                channel: "#task",
+                color: "good"
+                message: "✅ SUCCESS ${env.JOB_NAME} #${env.BUILD_NUMBER}\n Report Geneated"
+            )
+        }
+        failure{
+            slackSend(
+                channel: "#task",
+                color: "danger",
+                message: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck trivy. ${env.BUILD_URL}"
+            )
+        }
+    }
 }
