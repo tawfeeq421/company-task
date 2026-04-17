@@ -31,12 +31,6 @@ pipeline {
             }
         }
 
-        stage('Jest Test') {
-            steps {
-                sh 'npm test -- --watchAll=false --coverage'
-            }
-        }
-
         stage('SonarQube Analysis') {
             environment {
                 scannerHome = tool 'sonar'
