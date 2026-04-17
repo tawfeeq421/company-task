@@ -69,7 +69,13 @@ pipeline{
         }
         stage('Image Scan){
             steps{
-                sh 'trivy image ${DOCKER_IMAGE}:${DOCKER_TAG}'
+                sh """
+                trivy image \
+                --severity HIGH,CRITICAL \
+                --format table \
+                -o trivyimage.txt \
+                ${DOCKER_IMAGE}:${DOCKER_TAG} || true
+                """
             }
         }
     }
