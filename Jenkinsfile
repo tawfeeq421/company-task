@@ -46,5 +46,14 @@ pipeline {
                 }
             }
         }
+        stage('Trivy FS Scan'){
+            steps{
+                sh '''
+                trivy fs . \
+                --severity HIGH,CRITICAL \
+                --format table \
+                -o trivy-report.txt
+                '''            }
+        }
     }
 }
