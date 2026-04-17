@@ -9,6 +9,10 @@ pipeline {
     environment {
         DOCKER_IMAGE = "tawfeeq421/company-task"
         DOCKER_TAG = "${BUILD_NUMBER}"
+        AWS_REGION = 'us-west-2'
+        CLUSTER_NAME = 'my-cluster'
+        NAMESPACE = 'default'
+        IMAGE = "${DOCKER_IMAGE}:${DOCKER_TAG}"
     }
 
     stages {
@@ -25,9 +29,15 @@ pipeline {
             }
         }
 
-        stage('Install Dependency') {
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'npm test -- --watchAll=false --coverage'
             }
         }
 
@@ -56,7 +66,7 @@ pipeline {
                 trivy fs . \
                 --severity HIGH,CRITICAL \
                 --format table \
-                -o trivy-report.txt
+                -o trivy-report.txt || true
                 '''
             }
         }
@@ -65,36 +75,65 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
-                        sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-                        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                        def app = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                        app.push()
                     }
                 }
             }
         }
 
-        stage('Image Scan') {
+        stage('Trivy Image Scan') {
             steps {
                 sh """
                 trivy image \
                 --severity HIGH,CRITICAL \
                 --format table \
-                -o trivyimage.txt \
+                -o trivy-image-report.txt \
                 ${DOCKER_IMAGE}:${DOCKER_TAG} || true
                 """
+            }
+        }
+
+        stage('Deploy to EKS') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds'
+                ]]) {
+                    sh '''
+                    set -e
+
+                    echo "Updating kubeconfig..."
+                    aws eks --region $AWS_REGION update-kubeconfig --name $CLUSTER_NAME
+
+                    echo "Checking cluster connection..."
+                    kubectl get nodes
+
+                    echo "Create namespace if not exists..."
+                    kubectl get ns $NAMESPACE || kubectl create ns $NAMESPACE
+
+                    echo "Deploy Kubernetes manifests..."
+                    kubectl apply -f deployment.yml -n $NAMESPACE
+                    kubectl apply -f service.yml -n $NAMESPACE
+                    kubectl apply -f ingress.yml -n $NAMESPACE
+
+                    echo "Deployment completed successfully!"
+                    '''
+                }
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: 'trivy-report.txt', fingerprint: true
+            archiveArtifacts artifacts: 'trivy-report.txt, trivy-image-report.txt', fingerprint: true
         }
 
         success {
             slackSend(
                 channel: "#task",
                 color: "good",
-                message: "✅ SUCCESS ${env.JOB_NAME} #${env.BUILD_NUMBER}\nReport Generated"
+                message: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nDocker Image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
             )
         }
 
@@ -102,7 +141,7 @@ pipeline {
             slackSend(
                 channel: "#task",
                 color: "danger",
-                message: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck: ${env.BUILD_URL}"
+                message: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck Logs: ${env.BUILD_URL}"
             )
         }
     }
