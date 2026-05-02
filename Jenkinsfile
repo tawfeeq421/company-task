@@ -9,10 +9,10 @@ pipeline {
     environment {
         DOCKER_IMAGE = "tawfeeq421/company-task"
         DOCKER_TAG = "${BUILD_NUMBER}"
-        AWS_REGION = 'us-west-2'
-        CLUSTER_NAME = 'my-cluster'
-        NAMESPACE = 'default'
-        IMAGE = "${DOCKER_IMAGE}:${DOCKER_TAG}"
+        //AWS_REGION = 'us-west-2'
+        //CLUSTER_NAME = 'my-cluster'
+        //NAMESPACE = 'default'
+        //IMAGE = "${DOCKER_IMAGE}:${DOCKER_TAG}"
     }
 
     stages {
@@ -66,11 +66,7 @@ pipeline {
 
         stage('Docker Build & Push') {
             steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
-                        def app = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
-                        app.push()
-                    }
+               sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
@@ -86,31 +82,20 @@ pipeline {
                 """
             }
         }
-
-        stage('Deploy to EKS') {
-            steps {
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-creds'
-                ]]) {
+        stage('Docker Push'){
+            steps{
+                withCredentials([usernamePassword(
+                    creddentiaslId: 'docker_cred',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]){
                     sh '''
-                    set -e
+                    echo $PASS | docker login -u $USER --password-stdin
 
-                    echo "Updating kubeconfig..."
-                    aws eks --region $AWS_REGION update-kubeconfig --name $CLUSTER_NAME
+                    docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
 
-                    echo "Checking cluster connection..."
-                    kubectl get nodes
-
-                    echo "Create namespace if not exists..."
-                    kubectl get ns $NAMESPACE || kubectl create ns $NAMESPACE
-
-                    echo "Deploy Kubernetes manifests..."
-                    kubectl apply -f deployment.yml -n $NAMESPACE
-                    kubectl apply -f service.yml -n $NAMESPACE
-                    kubectl apply -f ingress.yml -n $NAMESPACE
-
-                    echo "Deployment completed successfully!"
+                    docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
+                    docker push ${DOCKER_IMAGE}:latest
                     '''
                 }
             }
@@ -124,7 +109,7 @@ pipeline {
 
         success {
             slackSend(
-                channel: "#task",
+                channel: "#amazon",
                 color: "good",
                 message: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nDocker Image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
             )
@@ -132,7 +117,7 @@ pipeline {
 
         failure {
             slackSend(
-                channel: "#task",
+                channel: "#amazon",
                 color: "danger",
                 message: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck Logs: ${env.BUILD_URL}"
             )
