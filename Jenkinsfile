@@ -11,10 +11,6 @@ pipeline {
     environment {
         DOCKER_IMAGE = "tawfeeq421/company-task"
         DOCKER_TAG = "${BUILD_NUMBER}"
-        //AWS_REGION = 'us-west-2'
-        //CLUSTER_NAME = 'my-cluster'
-        //NAMESPACE = 'default'
-        //IMAGE = "${DOCKER_IMAGE}:${DOCKER_TAG}"
     }
 
     stages {
@@ -36,6 +32,7 @@ pipeline {
                 sh 'npm install'
             }
         }
+
         stage('SonarQube Analysis') {
             environment {
                 scannerHome = tool 'sonar'
@@ -68,8 +65,7 @@ pipeline {
 
         stage('Docker Build & Push') {
             steps {
-               sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                }
+                sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
             }
         }
 
@@ -84,18 +80,17 @@ pipeline {
                 """
             }
         }
+
         stage('Docker Push'){
             steps{
                 withCredentials([usernamePassword(
-                    creddentiaslId: 'docker_cred',
+                    credentialsId: 'docker_cred',
                     usernameVariable: 'USER',
                     passwordVariable: 'PASS'
                 )]){
                     sh '''
                     echo $PASS | docker login -u $USER --password-stdin
-
                     docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
-
                     docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
                     docker push ${DOCKER_IMAGE}:latest
                     '''
