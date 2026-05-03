@@ -1,0 +1,109 @@
+pipeline{
+    agent {
+        label 'agent1'
+    }
+    tools{
+        jdk 'JDK17'
+        nodejs 'NODE16'
+    }
+    environment{
+        SCANNER_HOME = tool 'sonar'
+        DOCKER_IMAGE = "tawfeeq421/company-task"
+        DOCKER_TAG = "${BUILD_NUMBER}"
+    }
+    stages{
+        stage('Clean Workspace'){
+            steps{
+                cleanWs()
+            }
+        }
+        stage('Checkout SCM'){
+            steps{
+                git branch: 'main', url: 'https://github.com/tawfeeq421/company-task.git'
+            }
+        }
+        stage('Install Dependency'){
+            steps{
+                sh 'npm install'
+            }
+        }
+        stage('SonarQube Scan & Quality Gate'){
+            parallel {
+                stage('SonarQube Scan'){
+                    steps{
+                        withSonarQubeEnv('sonarserver'){
+                            sh """
+                            ${SCANNER_HOME}/bin/sonar-scanner \
+                            -Dsonar.projectKey=sahil-task
+                            -Dsonar.projectName=sahil-task
+                            """
+                        }
+                    }
+                }
+                stage('Quality Gate'){
+                    steps{
+                        timeout(time: 1, unit: 'HOURS'){
+                            waitForQualityGate abortPipeline: true
+                        }
+                    }
+                }
+            }
+        }
+        stage('Docker & Trivy'){
+            parallel{
+                stage('Trivy FS Scan'){
+                    steps{
+                        sh '''
+                        trivy fs . \
+                        --severity HIGH,CRITICAL \
+                        --format table \
+                        --no-progress \
+                        -o trivy-report.txt || true
+                        '''
+                    }
+                }
+                stage('Docker Build'){
+                    steps{
+                        sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                    }
+                }
+                stage('Trivy Image Scan'){
+                    steps{
+                        sh """
+                        trivy image \
+                        --severity HIGH,CRITICAL \
+                        --format table \
+                        --no-progress \
+                        -o trivy-image-report.txt \
+                        ${DOCKER_IMAGE}:${DOCKER_TAG} || true
+                        """
+                    }
+                }
+                stage('Remove Unusage Images'){
+                    steps{
+                        sh "docker image prune -af || true"
+                    }
+                }
+            }
+        }
+    }
+    post{
+        always{
+            archiveArtifacts artifacts: 'trivy-report.txt', 'trivy-image-report.txt', fingerprint: true
+        }
+        success{
+            slackSend(
+                channel: '#amazon',
+                color: "good",
+                message: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nImage ${DOCKER_IMAGE}:${DOCKER_TAG}"
+            )
+        }
+        failure{
+            slackSend(
+                channel: '#amazon',
+                color: "danger",
+                message: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck Logs ${env.BUILD_URL}"
+            )
+        }
+    }
+}
