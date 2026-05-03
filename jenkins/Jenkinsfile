@@ -79,6 +79,17 @@ pipeline{
                         """
                     }
                 }
+                stage('Docker Push'){
+                    steps{
+                        withCredentials([useranamePassword(
+                            credentialsId: 'docker-cred',
+                            usernameVariable: 'USER',
+                            passwordVariable: 'PASS'
+                        )]){
+                            sh 
+                        }
+                    }
+                }
                 stage('Remove Unusage Images'){
                     steps{
                         sh "docker image prune -af || true"

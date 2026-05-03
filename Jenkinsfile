@@ -89,7 +89,8 @@ pipeline {
                     passwordVariable: 'PASS'
                 )]){
                     sh '''
-                    echo $PASS | docker login -u $USER --password-stdin
+                    set -e 
+                    printf "%s" "$PASS" | docker login -u "$USER" --password-stdin https://index.docker.io/v1/
                     docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
                     docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
                     docker push ${DOCKER_IMAGE}:latest
