@@ -34,8 +34,8 @@ pipeline{
                         withSonarQubeEnv('sonarserver'){
                             sh """
                             ${SCANNER_HOME}/bin/sonar-scanner \
-                            -Dsonar.projectKey=sahil-task
-                            -Dsonar.projectName=sahil-task
+                            -Dsonar.projectKey=sahil
+                            -Dsonar.projectName=sahil
                             """
                         }
                     }
