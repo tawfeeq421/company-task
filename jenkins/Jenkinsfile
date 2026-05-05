@@ -106,7 +106,7 @@ pipeline{
     }
     post{
         always{
-            archiveArtifacts artifacts: 'trivy-report.txt', 'trivy-image-report.txt', fingerprint: true
+            archiveArtifacts artifacts: 'trivy-report.txt, trivy-image-report.txt', fingerprint: true
         }
         success{
             slackSend(
