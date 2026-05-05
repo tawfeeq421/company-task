@@ -1,56 +1,66 @@
-pipeline{
+pipeline {
     agent {
         label 'agent1'
     }
-    tools{
+
+    tools {
         jdk 'JDK17'
         nodejs 'NODE16'
     }
-    environment{
+
+    environment {
         SCANNER_HOME = tool 'sonar'
         DOCKER_IMAGE = "tawfeeq421/company-task"
         DOCKER_TAG = "${BUILD_NUMBER}"
     }
-    stages{
-        stage('Clean Workspace'){
-            steps{
+
+    stages {
+
+        stage('Clean Workspace') {
+            steps {
                 cleanWs()
             }
         }
-        stage('Checkout SCM'){
-            steps{
+
+        stage('Checkout SCM') {
+            steps {
                 git branch: 'main', url: 'https://github.com/tawfeeq421/company-task.git'
             }
         }
-        stage('Install Dependency'){
-            steps{
+
+        stage('Install Dependency') {
+            steps {
                 sh 'npm install'
             }
         }
-        stage('SonarQube Scan & Quality Gate'){
-            parallel {
-                stage('SonarQube Scan'){
-                    steps{
-                        withSonarQubeEnv('sonarserver'){
-                            sh """
-                            ${SCANNER_HOME}/bin/sonar-scanner
-                            """
-                        }
-                    }
-                }
-                stage('Quality Gate'){
-                    steps{
-                        timeout(time: 1, unit: 'HOURS'){
-                            waitForQualityGate abortPipeline: true
-                        }
-                    }
+
+        // ✅ FIXED: Sonar Scan (correct command format)
+        stage('SonarQube Scan') {
+            steps {
+                withSonarQubeEnv('sonarserver') {
+                    sh """
+                    ${SCANNER_HOME}/bin/sonar-scanner \
+                    -Dsonar.projectKey=sahil \
+                    -Dsonar.projectName=sahil
+                    """
                 }
             }
         }
-        stage('Docker & Trivy'){
-            parallel{
-                stage('Trivy FS Scan'){
-                    steps{
+
+        // ✅ FIXED: Sequential Quality Gate
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Docker & Trivy') {
+            parallel {
+
+                stage('Trivy FS Scan') {
+                    steps {
                         sh '''
                         trivy fs . \
                         --severity HIGH,CRITICAL \
@@ -60,13 +70,15 @@ pipeline{
                         '''
                     }
                 }
-                stage('Docker Build'){
-                    steps{
+
+                stage('Docker Build') {
+                    steps {
                         sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                     }
                 }
-                stage('Trivy Image Scan'){
-                    steps{
+
+                stage('Trivy Image Scan') {
+                    steps {
                         sh """
                         trivy image \
                         --severity HIGH,CRITICAL \
@@ -77,15 +89,17 @@ pipeline{
                         """
                     }
                 }
-                stage('Docker Push'){
-                    steps{
-                        withCredentials([useranamePassword(
+
+                // ✅ FIXED: credentials typo
+                stage('Docker Push') {
+                    steps {
+                        withCredentials([usernamePassword(
                             credentialsId: 'docker-cred',
                             usernameVariable: 'USER',
                             passwordVariable: 'PASS'
-                        )]){
+                        )]) {
                             sh '''
-                            set -e 
+                            set -e
                             printf "%s" "$PASS" | docker login -u "$USER" --password-stdin https://index.docker.io/v1/
                             docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
                             docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
@@ -94,30 +108,34 @@ pipeline{
                         }
                     }
                 }
-                stage('Remove Unusage Images'){
-                    steps{
+
+                stage('Remove Unused Images') {
+                    steps {
                         sh "docker image prune -af || true"
                     }
                 }
             }
         }
     }
-    post{
-        always{
+
+    post {
+        always {
             archiveArtifacts artifacts: 'trivy-report.txt, trivy-image-report.txt', fingerprint: true
         }
-        success{
+
+        success {
             slackSend(
                 channel: '#amazon',
                 color: "good",
-                message: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nImage ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                message: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nImage: ${DOCKER_IMAGE}:${DOCKER_TAG}"
             )
         }
-        failure{
+
+        failure {
             slackSend(
                 channel: '#amazon',
                 color: "danger",
-                message: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck Logs ${env.BUILD_URL}"
+                message: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck Logs: ${env.BUILD_URL}"
             )
         }
     }
